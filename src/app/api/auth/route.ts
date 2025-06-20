@@ -1,4 +1,4 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import { SupabaseAdapter } from "@next-auth/supabase-adapter";
 import { createClient } from "@supabase/supabase-js";
 import GitHubProvider from "next-auth/providers/github";
@@ -9,7 +9,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY as string
 );
 
-export const authOptions: AuthOptions = {
+export const authConfig: NextAuthConfig = {
   // Provider di esempio (GitHub). Aggiungine/ sostituisci secondo necessità.
   providers: [
     GitHubProvider({
@@ -30,5 +30,4 @@ export const authOptions: AuthOptions = {
   },
 };
 
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export const { GET, POST } = NextAuth(authConfig);
