@@ -26,7 +26,7 @@
     "@types/node": "20.10.6",
     "tailwindcss": "^3.4.0",
     "postcss": "^8.4.31",
-            "autoprefixer": "10.4.15",5"
+            "autoprefixer": "10",
 
             },  
       "overrides": {
