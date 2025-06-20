@@ -13,7 +13,7 @@
     "react-dom": "18.3.0",
       "next-auth": "^4.24.1",
         "@supabase/supabase-js": "^2.0.0",
-          "@next-auth/supabase-adapter": "^0.2.2",
+          "@next-auth/supabase-adapter": "^0.2.2"
 
     "prisma": "^5.14.0",
     "@prisma/client": "^5.14.0",
