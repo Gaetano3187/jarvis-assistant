@@ -1,43 +1,73 @@
-generator client { provider = "prisma-client-js" }
-datasource db      { provider = "postgresql" url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ListType {
+  PHYSICAL
+  ONLINE
+}
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  image     String?
   expenses  Expense[]
-  lists     ShoppingList[]
-  incomes   Income[]
+  groceries Grocery[]
+  stocks    Stock[]
+  createdAt DateTime  @default(now())
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  icon      String?
+  expenses  Expense[]
+  budgets   Budget[]
 }
 
 model Expense {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  category  Category @default(VARIE)
-  merchant  String?
-  amount    Decimal  @db.Money
-  date      DateTime
-  createdAt DateTime @default(now())
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  amount      Decimal
+  date        DateTime  @default(now())
+  note        String?
+  receiptUrl  String?
 }
 
-model Income {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  source    String
-  amount    Decimal  @db.Money
-  date      DateTime
+model Budget {
+  id          String   @id @default(cuid())
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  amount      Decimal
+  month       Int
+  year        Int
 }
 
-model ShoppingList {
-  id        String   @id @default(cuid())
-  type      ListType
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  items     Json     // [{name, qty, checked, expires}]
-  updatedAt DateTime @updatedAt
+model Grocery {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  name        String
+  qty         Int      @default(1)
+  unit        String?
+  bought      Boolean  @default(false)
+  listType    ListType
 }
 
-enum Category   { CASA VESTITI DIVERTIMENTO VARIE }
-enum ListType   { SUPERMARKET ONLINE }
+model Stock {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  name        String
+  qty         Int
+  threshold   Int      @default(1)
+}
