@@ -1,19 +1,23 @@
-import "./globals.css";
-import type { Metadata } from "next";
+import './globals.css';
+import { Inter } from 'next/font/google';
+import Sidebar from '@/components/Sidebar';
+import { TRPCProvider } from '@/components/TRPCProvider';
 
-export const metadata: Metadata = {
-  title: "Jarvis Assistant",
-  description: "Gestione finanze personali e liste spesa",
-};
+const inter = Inter({ subsets: ['latin'] });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export const metadata = { title: 'Jarvis Assistant', description: 'Finanze & Liste' };
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it">
-      <body>{children}</body>
+    <html lang="it" data-theme="light">
+      <body className={inter.className}>
+        <TRPCProvider>
+          <div className="flex h-screen">
+            <Sidebar />
+            <main className="flex-1 overflow-y-auto">{children}</main>
+          </div>
+        </TRPCProvider>
+      </body>
     </html>
   );
 }
