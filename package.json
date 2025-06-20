@@ -28,10 +28,11 @@
     "postcss": "^8.4.31",
         "autoprefixer": "10.4.15"
 ,
-    "overrides": {
+ },    "overrides": {
     "react": "18.2.0",
     "react-dom": "18.2.0"
   }}
+}
 }
 
 
