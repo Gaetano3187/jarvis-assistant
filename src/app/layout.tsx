@@ -1,6 +1,7 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 import Sidebar from '@/components/Sidebar';
+import TopBar from '@/components/TopBar';
 import { TRPCProvider } from '@/components/TRPCProvider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -12,7 +13,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="it" data-theme="light">
       <body className={inter.className}>
         <TRPCProvider>
-          <div className="flex h-screen">
+    
+    <TopBar />      <div className="flex h-screen">
             <Sidebar />
             <main className="flex-1 overflow-y-auto">{children}</main>
           </div>
