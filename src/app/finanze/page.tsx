@@ -1,5 +1,5 @@
-import VoiceInput from '@/components/VoiceInput';
-import ReceiptUploader from '@/components/ReceiptUploader';
+import VoiceInput from '../../components/VoiceInput
+import ReceiptUploader from '@/co../../components/ReceiptUploader
 
 export default function FinanzePage() {
   const handleVoice = (txt: string) => {
