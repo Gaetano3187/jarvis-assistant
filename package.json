@@ -1,19 +1,31 @@
 {
-  "name": "next-supabase-openai",
-  "version": "0.1.0",
+  "name": "jarvis-assistant",
+  "version": "1.0.0",
+  "description": "This project is a Next.js application built with TypeScript and TailwindCSS. It integrates Supabase for authentication and data storage and OpenAI for some AI features.",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gaetano3187/jarvis-assistant.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gaetano3187/jarvis-assistant/issues"
+  },
+  "homepage": "https://github.com/Gaetano3187/jarvis-assistant#readme",
   "dependencies": {
     "next": "14.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.4.31",
-    "autoprefixer": "^10.4.15",
+    "tailwindcss": "3.3.4",
+    "postcss": "8.4.31",
+    "autoprefixer": "10.4.15",
     "@supabase/supabase-js": "^2.39.8",
     "dotenv": "^16.4.2",
     "react-speech-recognition": "^4.0.1",
@@ -24,5 +36,5 @@
     "typescript": "^5.4.0",
     "@types/react": "^18.2.21",
     "@types/node": "^20.10.6"
+  }
 }
- 
