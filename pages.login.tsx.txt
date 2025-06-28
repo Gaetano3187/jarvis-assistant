@@ -1,0 +1,10 @@
+import Layout from '@/components/Layout';
+import AuthForm from '@/components/AuthForm';
+
+export default function LoginPage() {
+  return (
+    <Layout title="Accedi / Registrati">
+      <AuthForm />
+    </Layout>
+  );
+}
