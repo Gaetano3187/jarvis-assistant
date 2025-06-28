@@ -1,4 +1,4 @@
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import UserProfile from '../components/UserProfile';
 
 export default function ProfilePage() {
