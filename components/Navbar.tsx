@@ -33,6 +33,6 @@ export default function Navbar({ userEmail }: NavbarProps) {
           Logout
         </button>
       </div>
-    </nav>
+      <Link href="/settings" className="px-3 py-2 hover:underline">Impostazioni</Link>`n</nav>
   );
 }
