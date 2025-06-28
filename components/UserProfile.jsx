@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
+import { useAuth } from '../context/AuthContext';
 
-export default function UserProfile() {
-  const [nome, setNome] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [preferenze, setPreferenze] = useState({ lingua: "it", voce: true });
+export default function ProfilePage() {
+  const { user } = useAuth();
+  if (!user) return <p>Accesso negato</p>;
 
-  useEffect(() => {
-    const datiSalvati = JSON.parse(localStorage.getItem("jarvis_user"));
-    if (datiSalvati) {
-      setNome(datiSalvati.nome || "");
-      setAvatarUrl(datiSalvati.avatarUrl || "");
-      setPreferenze(datiSalvati.preferenze || { lingua: "it", voce: true });
-    }
-  }, []);
+  return (
+    <div>
+      <h1>👤 Profilo Utente</h1>
+      <p>Email: {user.email}</p>
+    </div>
+  );
+}
 
   const salva = () => {
     const dati = { nome, avatarUrl, preferenze };
