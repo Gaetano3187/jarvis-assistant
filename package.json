@@ -1,0 +1,56 @@
+{
+  "name": "jarvis-assistant",
+  "version": "1.0.0",
+  "description": "Jarvis Desktop Assistant – AI vocale con OCR, liste, spese e backup cloud",
+  "main": "main.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next export",
+    "start": "next start",
+    "electron-dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-build": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.5",
+    "file-saver": "^2.0.5",
+    "next": "13.4.19",
+    "next-themes": "^0.2.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "recharts": "^2.7.2",
+    "tesseract.js": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.8",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^8.2.0",
+    "electron": "^29.1.5",
+    "electron-builder": "^24.6.3",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.4",
+    "wait-on": "^7.0.1"
+  },
+  "build": {
+    "appId": "com.jarvis.desktop",
+    "productName": "Jarvis Desktop Assistant",
+    "files": [
+      "main.js",
+      "out/**/*"
+    ],
+    "directories": {
+      "buildResources": "build"
+    },
+    "mac": {
+      "icon": "build/icons/icon.icns",
+      "target": "dmg"
+    },
+    "win": {
+      "icon": "build/icons/icon.ico",
+      "target": "nsis"
+    },
+    "linux": {
+      "icon": "build/icons/icon.png",
+      "target": "AppImage"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+# ───── ENV segreti ─────
+.env*
+# ───── Build / cache ───
+node_modules/
+.next/
+supabase/.temp/
+.supabase/
+# ───── Altro facoltativo ─
+.vscode/

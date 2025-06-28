@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: system-ui, sans-serif;
+  background-color: white;
+}
+
+.dark body {
+  background-color: #111827;
+  color: white;
+}
+
