@@ -21,7 +21,8 @@ export default function VoiceTest() {
       setTranscript('');
     };
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
+
       setTranscript(event.results[0][0].transcript);
       setListening(false);
     };

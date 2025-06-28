@@ -23,7 +23,8 @@ export default function VoiceSave() {
       setListening(true);
     };
 
-    recognition.onresult = async (event: SpeechRecognitionEvent) => {
+    recognition.onresult = async (event: any) => {
+
       const text = event.results[0][0].transcript;
       setTranscript(text);
       setListening(false);
