@@ -1,59 +1,27 @@
 {
-  "name": "jarvis-assistant",
+  "name": "jarvis-assistent",
   "version": "1.0.0",
-  "description": "Jarvis Desktop Assistant – AI vocale con OCR, liste, spese e backup cloud",
-  "main": "main.js",
+  "description": "A next project generated based on a UIDL document",
+  "main": "index.js",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next",
     "build": "next build",
     "start": "next start",
-    "electron-dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-build": "npm run build && electron-builder"
+    "export": "next export"
   },
+  "author": "TeleportHQ",
+  "license": "MIT",
   "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
-    "@supabase/auth-helpers-react": "^0.5.0",
-    "@supabase/supabase-js": "^2.50.2",
-    "file-saver": "^2.0.5",
-    "next": "^14.2.3",
-    "next-themes": "^0.2.1",
-    "openai": "^5.8.2",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "recharts": "^2.7.2",
-    "tesseract.js": "^4.1.1"
+    "next": "^12.1.10",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "next-intl": "2.10.0",
+    "dangerous-html": "0.1.13",
+    "prop-types": "15.7.2",
+    "@lottiefiles/lottie-player": "1.6.0"
   },
-  "devDependencies": {
-    "@types/react": "19.1.8",
-    "autoprefixer": "^10.4.21",
-    "concurrently": "^8.2.0",
-    "electron": "^29.1.5",
-    "electron-builder": "^24.6.3",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.4",
-    "wait-on": "^7.0.1"
+  "engines": {
+    "node": ">=18.x"
   },
-  "build": {
-    "appId": "com.jarvis.desktop",
-    "productName": "Jarvis Desktop Assistant",
-    "files": [
-      "main.js",
-      "out/**/*"
-    ],
-    "directories": {
-      "buildResources": "build"
-    },
-    "mac": {
-      "icon": "build/icons/icon.icns",
-      "target": "dmg"
-    },
-    "win": {
-      "icon": "build/icons/icon.ico",
-      "target": "nsis"
-    },
-    "linux": {
-      "icon": "build/icons/icon.png",
-      "target": "AppImage"
-    }
-  }
+  "devDependencies": {}
 }
