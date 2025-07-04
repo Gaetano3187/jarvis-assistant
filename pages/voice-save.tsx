@@ -1,63 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import QuickVoiceButton from '../components/QuickVoiceButton';
+import { blobToBase64 } from '../lib/blobToBase64';
 
 export default function VoiceSave() {
-  const [isSupported, setIsSupported] = useState(true);
-  const [transcript, setTranscript] = useState('');
-  const [saved, setSaved] = useState(false);
-  const [listening, setListening] = useState(false);
+  const [lastAssistantReply, setLastAssistantReply] = useState<string | null>(null);
+  const [lastUserPrompt, setLastUserPrompt] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      setIsSupported(false);
-    }
-  }, []);
-
-  const startRecognition = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'it-IT';
-
-    recognition.onstart = () => {
-      setTranscript('');
-      setSaved(false);
-      setListening(true);
-    };
-
-    recognition.onresult = async (event: any) => {
-
-      const text = event.results[0][0].transcript;
-      setTranscript(text);
-      setListening(false);
-
-      const response = await fetch('/api/save-transcript', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: text }),
-      });
-
-      if (response.ok) {
-        setSaved(true);
-      }
-    };
-
-    recognition.onerror = () => setListening(false);
-    recognition.onend = () => setListening(false);
-    recognition.start();
+  const handleVoiceCommand = async (audioBlob: Blob) => {
+    setLastUserPrompt('[comando vocale inviato]');
+    const res = await fetch('/api/agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ func: 'finanzeVocale', audio: await blobToBase64(audioBlob) }),
+    });
+    const data = await res.json();
+    setLastAssistantReply(data.reply ?? '');
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>🎤 Voice + Salvataggio Supabase</h1>
-      {!isSupported ? (
-        <p style={{ color: 'red' }}>❌ Il tuo browser non supporta la Web Speech API.</p>
-      ) : (
-        <>
-          <button onClick={startRecognition} disabled={listening} style={{ padding: '1rem', fontSize: '1rem' }}>
-            {listening ? 'Ascoltando...' : 'Avvia registrazione'}
-          </button>
-          <p><strong>Testo rilevato:</strong> {transcript}</p>
-          {saved && <p style={{ color: 'green' }}>✅ Salvataggio riuscito</p>}
-        </>
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">Voice Save</h1>
+      <QuickVoiceButton onResult={handleVoiceCommand} />
+      {lastAssistantReply && (
+        <div className="border rounded p-4 bg-gray-50">
+          <h2 className="font-semibold mb-2">Risposta</h2>
+          <p>{lastAssistantReply}</p>
+        </div>
       )}
     </div>
   );
