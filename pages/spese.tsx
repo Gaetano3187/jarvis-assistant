@@ -1,157 +1,64 @@
 import { useState } from 'react';
+import QuickVoiceButton from '../components/QuickVoiceButton';
+import { blobToBase64 } from '../lib/blobToBase64';
 
 export default function Spese() {
-  const [transcript, setTranscript] = useState('');
-  const [supermercato, setSupermercato] = useState<string[]>([]);
-  const [online, setOnline] = useState<string[]>([]);
-  const [newSuper, setNewSuper] = useState('');
-  const [newOnline, setNewOnline] = useState('');
+  const [query, setQuery] = useState('');
+  const [report, setReport] = useState('');
+  const [lastAssistantReply, setLastAssistantReply] = useState<string | null>(null);
+  const [lastUserPrompt, setLastUserPrompt] = useState<string | null>(null);
 
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [editText, setEditText] = useState('');
-
-  const startVoiceRecognition = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) return alert('Browser non supporta il riconoscimento vocale');
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'it-IT';
-    recognition.continuous = false;
-
-    recognition.onresult = (event: any) => {
-      const spoken = event.results[0][0].transcript;
-      setTranscript(spoken);
-
-      if (spoken.includes('supermercato')) {
-        const cleaned = spoken.replace(/.*supermercato/i, '').trim();
-        const items = cleaned.split(/,| e /).map(x => x.trim()).filter(Boolean);
-        setSupermercato(prev => [...prev, ...items]);
-      }
-
-      if (spoken.includes('online')) {
-        const cleaned = spoken.replace(/.*online/i, '').trim();
-        const items = cleaned.split(/,| e /).map(x => x.trim()).filter(Boolean);
-        setOnline(prev => [...prev, ...items]);
-      }
-    };
-
-    recognition.start();
+  const handleManualSubmit = async () => {
+    if (!query.trim()) return;
+    setLastUserPrompt(query);
+    const res = await fetch('/api/agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ func: 'reportFinanze', query }),
+    });
+    const data = await res.json();
+    setLastAssistantReply(data.reply ?? '');
+    setReport(data.reply ?? '');
   };
 
-  const removeItem = (list: string[], setList: (l: string[]) => void, index: number) => {
-    const updated = [...list];
-    updated.splice(index, 1);
-    setList(updated);
-  };
-
-  const updateItem = (list: string[], setList: (l: string[]) => void, index: number) => {
-    const updated = [...list];
-    updated[index] = editText;
-    setList(updated);
-    setEditIndex(null);
-    setEditText('');
+  const handleVoiceCommand = async (audioBlob: Blob) => {
+    setLastUserPrompt('[comando vocale inviato]');
+    const res = await fetch('/api/agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ func: 'finanzeVocale', audio: await blobToBase64(audioBlob) }),
+    });
+    const data = await res.json();
+    setLastAssistantReply(data.reply ?? '');
+    setReport(data.reply ?? '');
   };
 
   return (
-    <div className="p-6 text-white space-y-6">
-      <h1 className="text-2xl font-bold">🛒 Sezione Spese</h1>
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">Sezione Spese</h1>
 
-      <button onClick={startVoiceRecognition} className="bg-blue-600 px-4 py-2 rounded text-white">
-        🎙️ Attiva riconoscimento vocale
-      </button>
+      {/* Input manuale */}
+      <div className="flex space-x-2">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Esempio: Quanto ho speso per cene a marzo?"
+          className="flex-1 border rounded px-3 py-2"
+        />
+        <button onClick={handleManualSubmit} className="btn-primary px-4">Invia</button>
+      </div>
 
-      {transcript && (
-        <div className="bg-black p-4 rounded border border-gray-600">
-          <p className="mb-2 font-semibold">📋 Trascrizione:</p>
-          <p className="text-green-400">{transcript}</p>
+      {/* Pulsante vocale */}
+      <QuickVoiceButton onResult={handleVoiceCommand} />
+
+      {/* Report */}
+      {report && (
+        <div className="border rounded p-4 bg-gray-50">
+          <h2 className="font-semibold mb-2">Risultato</h2>
+          <p>{report}</p>
         </div>
       )}
-
-      {/* Lista Supermercato */}
-      <div className="bg-gray-800 p-4 rounded-xl">
-        <h2 className="text-lg font-bold mb-2">🛒 Lista Supermercato</h2>
-
-        <ul className="space-y-1">
-          {supermercato.map((item, i) => (
-            <li key={i} className="flex items-center gap-2">
-              {editIndex === i ? (
-                <>
-                  <input
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    className="text-black p-1 rounded"
-                  />
-                  <button onClick={() => updateItem(supermercato, setSupermercato, i)} className="text-green-400">💾</button>
-                </>
-              ) : (
-                <>
-                  <span>{item}</span>
-                  <button onClick={() => { setEditIndex(i); setEditText(item); }} className="text-yellow-400">✏️</button>
-                  <button onClick={() => removeItem(supermercato, setSupermercato, i)} className="text-red-500">❌</button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-2 flex gap-2">
-          <input
-            value={newSuper}
-            onChange={(e) => setNewSuper(e.target.value)}
-            className="text-black p-1 rounded w-full"
-            placeholder="Aggiungi prodotto..."
-          />
-          <button
-            onClick={() => { if (newSuper.trim()) setSupermercato([...supermercato, newSuper.trim()]); setNewSuper(''); }}
-            className="bg-green-600 px-2 rounded"
-          >
-            ➕
-          </button>
-        </div>
-      </div>
-
-      {/* Lista Online */}
-      <div className="bg-gray-800 p-4 rounded-xl">
-        <h2 className="text-lg font-bold mb-2">🛍️ Lista Online</h2>
-
-        <ul className="space-y-1">
-          {online.map((item, i) => (
-            <li key={i} className="flex items-center gap-2">
-              {editIndex === 1000 + i ? (
-                <>
-                  <input
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    className="text-black p-1 rounded"
-                  />
-                  <button onClick={() => updateItem(online, setOnline, i)} className="text-green-400">💾</button>
-                </>
-              ) : (
-                <>
-                  <span>{item}</span>
-                  <button onClick={() => { setEditIndex(1000 + i); setEditText(item); }} className="text-yellow-400">✏️</button>
-                  <button onClick={() => removeItem(online, setOnline, i)} className="text-red-500">❌</button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-2 flex gap-2">
-          <input
-            value={newOnline}
-            onChange={(e) => setNewOnline(e.target.value)}
-            className="text-black p-1 rounded w-full"
-            placeholder="Aggiungi prodotto..."
-          />
-          <button
-            onClick={() => { if (newOnline.trim()) setOnline([...online, newOnline.trim()]); setNewOnline(''); }}
-            className="bg-green-600 px-2 rounded"
-          >
-            ➕
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
