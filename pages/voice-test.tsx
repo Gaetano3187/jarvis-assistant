@@ -1,49 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import QuickVoiceButton from '../components/QuickVoiceButton';
+import { blobToBase64 } from '../lib/blobToBase64';
 
 export default function VoiceTest() {
-  const [isSupported, setIsSupported] = useState(true);
-  const [transcript, setTranscript] = useState('');
-  const [listening, setListening] = useState(false);
+  const [lastAssistantReply, setLastAssistantReply] = useState<string | null>(null);
+  const [lastUserPrompt, setLastUserPrompt] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      setIsSupported(false);
-    }
-  }, []);
-
-  const startRecognition = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'it-IT';
-
-    recognition.onstart = () => {
-      setListening(true);
-      setTranscript('');
-    };
-
-    recognition.onresult = (event: any) => {
-
-      setTranscript(event.results[0][0].transcript);
-      setListening(false);
-    };
-
-    recognition.onerror = () => setListening(false);
-    recognition.onend = () => setListening(false);
-    recognition.start();
+  const handleVoiceCommand = async (audioBlob: Blob) => {
+    setLastUserPrompt('[comando vocale inviato]');
+    const res = await fetch('/api/agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ func: 'finanzeVocale', audio: await blobToBase64(audioBlob) }),
+    });
+    const data = await res.json();
+    setLastAssistantReply(data.reply ?? '');
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>🎤 Voice Test</h1>
-      {!isSupported ? (
-        <p style={{ color: 'red' }}>❌ Il browser non supporta la Web Speech API.</p>
-      ) : (
-        <>
-          <button onClick={startRecognition} disabled={listening}>
-            {listening ? 'Ascoltando...' : 'Avvia riconoscimento vocale'}
-          </button>
-          <p><strong>Risultato:</strong> {transcript}</p>
-        </>
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">Voice Test</h1>
+      <QuickVoiceButton onResult={handleVoiceCommand} />
+      {lastAssistantReply && (
+        <div className="border rounded p-4 bg-gray-50">
+          <h2 className="font-semibold mb-2">Risposta</h2>
+          <p>{lastAssistantReply}</p>
+        </div>
       )}
     </div>
   );
