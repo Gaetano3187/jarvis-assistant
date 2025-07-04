@@ -1,48 +1,32 @@
-import { useEffect, useState } from "react";
+import { useState } from 'react';
+import QuickVoiceButton from './QuickVoiceButton';
+import { blobToBase64 } from '../lib/blobToBase64';
 
-const VoiceOnlyMode = ({ onCommand }) => {
-  const [listening, setListening] = useState(false);
-  const [recognition, setRecognition] = useState(null);
+export default function VoiceOnlyMode() {
+  const [lastAssistantReply, setLastAssistantReply] = useState<string | null>(null);
+  const [lastUserPrompt, setLastUserPrompt] = useState<string | null>(null);
 
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Il tuo browser non supporta il riconoscimento vocale.");
-      return;
-    }
-
-    const rec = new SpeechRecognition();
-    rec.continuous = true;
-    rec.interimResults = false;
-    rec.lang = "it-IT";
-
-    rec.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript.trim();
-      console.log("Comando vocale:", transcript);
-      onCommand(transcript);
-    };
-
-    setRecognition(rec);
-  }, []);
-
-  const toggleListening = () => {
-    if (!recognition) return;
-    if (listening) {
-      recognition.stop();
-      setListening(false);
-    } else {
-      recognition.start();
-      setListening(true);
-    }
+  const handleVoiceCommand = async (audioBlob: Blob) => {
+    setLastUserPrompt('[comando vocale inviato]');
+    const res = await fetch('/api/agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ func: 'finanzeVocale', audio: await blobToBase64(audioBlob) }),
+    });
+    const data = await res.json();
+    setLastAssistantReply(data.reply ?? '');
   };
 
   return (
-    <div className="p-4">
-      <button onClick={toggleListening} className="rounded-xl p-2 bg-gray-100 border">
-        {listening ? "🔇 Ferma Voce" : "🎤 Attiva Solo Voce"}
-      </button>
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">Voice Only Mode</h1>
+      <QuickVoiceButton onResult={handleVoiceCommand} />
+      {lastAssistantReply && (
+        <div className="border rounded p-4 bg-gray-50">
+          <h2 className="font-semibold mb-2">Risposta</h2>
+          <p>{lastAssistantReply}</p>
+        </div>
+      )}
     </div>
   );
-};
-
-export default VoiceOnlyMode;
+}
